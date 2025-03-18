@@ -1,0 +1,58 @@
+version: '1.0.0'
+services:
+  novify-api:
+    build:
+      context: ./novify-api
+      dockerfile: Dockerfile.yml
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_DEBUG=${APP_DEBUG}
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${APP_URL}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+      - NOVIFY_API_URL=${NOVIFY_API_URL}
+    networks:
+      - novify-apps
+
+    depends_on:
+      - novify-db
+      - novify-redis
+  novify-db:
+    image: mysql:8.4
+    volumes:
+      - novify-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    restart: always
+    networks:
+      - novify-apps 
+  novify-redis:
+    image: bitnami/redis:latest
+    volumes:
+      - novify-redis:/var/lib/redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: always
+    networks:
+      - novify-apps
+
+networks:
+  novify-apps:
+    driver: bridge
+
+volumes:
+  novify-data:
+  novify-redis:

@@ -1,0 +1,61 @@
+FROM php:8.3.11-fpm
+
+ARG user
+ARG uid
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    zip \
+    unzip \
+    curl \
+    bash \
+    fcgiwrap \
+    libonig-dev \
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libmcrypt-dev \
+    libssl-dev \
+    libmariadb-dev-compat \
+    libmariadb-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libwebp-dev \
+    libicu-dev \
+    libmemcached-dev \
+    libzip-dev \
+    libz-dev && rm -rf /var/lib/apt/lists/*
+
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp  && \
+    docker-php-ext-install gd && \
+    docker-php-ext-install pdo && \
+    docker-php-ext-install pdo_mysql && \
+    docker-php-ext-install exif && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install mbstring && \
+    docker-php-ext-install exif && \
+    docker-php-ext-install pcntl && \
+    docker-php-ext-install bcmath && \
+    docker-php-ext-install opcache 
+
+
+# Install Redis extension via pecl
+RUN pecl install redis && \
+    docker-php-ext-enable redis
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+COPY . /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html
+
+USER www-data
+
+EXPOSE 8080
+
+CMD ["php-fpm"]
