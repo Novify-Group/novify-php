@@ -139,7 +139,7 @@ class MerchantService
         ]);
 
         // Load relationships including branches
-        $merchant->load(['country', 'wallets.currency', 'marketArea', 'branches']);
+        $merchant->load(['country', 'wallets.currency', 'marketArea', 'branches','productCategories','productMeasureUnits']);
 
         return $this->successResponse([
             'merchant' => [
