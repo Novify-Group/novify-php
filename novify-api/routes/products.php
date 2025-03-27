@@ -5,13 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('products')->group(function () {
 
-    Route::prefix('temp')->group(function () {
-        Route::get('/categories', [ProductController::class, 'getTempCategories']);
-        Route::get('/measure-units', [ProductController::class, 'getTempMeasureUnits']);
-        Route::post('/categories', [ProductController::class, 'chooseTempCategories']);
-        Route::post('/measure-units', [ProductController::class, 'chooseTempMeasureUnits']);
-    });
-
 
     Route::prefix('lists')->group(function () {
         Route::get('/categories', [ProductController::class, 'categories']);
@@ -26,6 +19,16 @@ Route::prefix('products')->group(function () {
     Route::post('/{product}/images', [ProductController::class, 'storeImage']);
 
     Route::middleware('auth:api')->group(function () {
+        
+        // Temp Data
+        Route::prefix('temp')->group(function () {
+            Route::get('/categories', [ProductController::class, 'getTempCategories']);
+            Route::get('/measure-units', [ProductController::class, 'getTempMeasureUnits']);
+            Route::post('/categories', [ProductController::class, 'chooseTempCategories']);
+            Route::post('/measure-units', [ProductController::class, 'chooseTempMeasureUnits']);
+            Route::post('/setup', [ProductController::class, 'chooseTempData']);
+        });
+
         // Products
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{product}', [ProductController::class, 'update']);

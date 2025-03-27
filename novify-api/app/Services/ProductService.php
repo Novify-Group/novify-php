@@ -370,6 +370,24 @@ class ProductService
         return $this->successResponse($measureUnits);
     }
 
+    public function chooseTempData(Merchant $merchant, array $tempData): array
+    {
+        $tempCategories   = $tempData['temp_category_ids'];
+        $tempMeasureUnits = $tempData['temp_measure_unit_ids'];
+
+        if(count($tempCategories) == 0 && count($tempMeasureUnits) == 0)
+            return $this->errorResponse('No selection made', 400);
+
+        if(count($tempCategories) > 0)
+            $this->chooseTempCategories($merchant, $tempCategories);
+        
+        if(count($tempMeasureUnits) > 0)
+            $this->chooseTempMeasureUnits($merchant, $tempMeasureUnits);
+
+        return $this->successResponse(null, 'Temp data chosen successfully');
+    }
+    
+
     public function chooseTempCategories(Merchant $merchant, array $tempCategoryIds): array
     {
         // Get the temp categories with their data

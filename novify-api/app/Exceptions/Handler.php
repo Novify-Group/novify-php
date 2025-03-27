@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Throwable;
 use App\Helpers\LogHelper;
 
@@ -72,6 +73,14 @@ class Handler extends ExceptionHandler
             return response()->json(
                 $this->errorResponse('Entity not found', 404),
                 404
+            );
+        }
+
+        if ($e instanceof UniqueConstraintViolationException) {
+            LogHelper::logError('Unique Constraint Violation', $e);
+            return response()->json(
+                $this->errorResponse('Attempt to create duplicate record(s)', 400),
+                400
             );
         }
 

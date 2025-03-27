@@ -298,4 +298,18 @@ class ProductController extends BaseApiController
             return $this->productService->chooseTempMeasureUnits($request->user(), $request->temp_measure_unit_ids);
         });
     }
+
+    public function chooseTempData(Request $request): JsonResponse 
+    {
+        return $this->execute(function () use ($request) {
+            $request->validate([
+                'temp_category_ids' => 'required|array',
+                'temp_category_ids.*' => 'required|exists:temp_categories,id',
+                'temp_measure_unit_ids' => 'required|array',
+                'temp_measure_unit_ids.*' => 'required|exists:temp_measure_units,id'
+            ]);
+
+            return $this->productService->chooseTempData($request->user(), $request->all());
+        });
+    }
 } 
