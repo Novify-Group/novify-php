@@ -49,7 +49,7 @@ class MerchantController extends BaseApiController
     {
         return $this->execute(function () use ($request) {
             $request->validate([
-                'otp' => 'required|string|size:6'
+                'otp' => 'required|string|size:4'
             ]);
 
             return $this->merchantService->verifyOtp($request->user(), $request->otp);
