@@ -64,8 +64,10 @@ class ProductController extends BaseApiController
     // Categories
     public function categories(Request $request): JsonResponse
     {
+      
         return $this->execute(function () use ($request) {
-            return $this->productService->listCategories($request->user(), $request->input('per_page', 20));
+            $request['is_active'] = 1;
+            return $this->productService->listCategories($request->all(), $request->input('per_page', 20));
         });
     }
 
@@ -86,7 +88,7 @@ class ProductController extends BaseApiController
     public function showCategory(ProductCategory $category): JsonResponse
     {
         return $this->execute(function () use ($category) {
-            return $this->successResponse(['category' => $category->load('products')]);
+            return $this->successResponse( $category->load('products'));
         });
     }
 
@@ -115,7 +117,8 @@ class ProductController extends BaseApiController
     public function measureUnits(Request $request): JsonResponse
     {
         return $this->execute(function () use ($request) {
-            return $this->productService->listMeasureUnits($request->user(), $request->input('per_page', 20));
+            $request['is_active'] = 1;
+            return $this->productService->listMeasureUnits($request->all());
         });
     }
 

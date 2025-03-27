@@ -31,8 +31,8 @@ class ProductService
             // Create the product
             $product = DB::transaction(function () use ($merchant, $data) {
                 return $merchant->products()->create([
-                    'category_id' => $data['category_id'],
-                    'measure_unit_id' => $data['measure_unit_id'],
+                    'product_category_id' => $data['category_id'],
+                    'product_measure_unit_id' => $data['measure_unit_id'],
                     'name' => $data['name'],
                     'sku' => $data['sku'],
                     'description' => $data['description'] ?? null,
@@ -42,11 +42,11 @@ class ProductService
                     'min_stock_level' => $data['min_stock_level'],
                     'featured_image' => $data['featured_image'] ?? null,
                     'is_featured' => $data['is_featured'] ?? false,
-                    'is_discounted' => $data['is_discounted'] ?? false,
+                    'is_discounted' => ($data['is_discounted'] || $data['discount_percentage'] || $data['discount_amount']) ?? false,
                     'discount_percentage' => $data['discount_percentage'] ?? null,
                     'discount_amount' => $data['discount_amount'] ?? null,
                     'is_discount_percentage' => $data['is_discount_percentage'] ?? false,
-                    'is_taxable' => $data['is_taxable'] ?? false,
+                    'is_taxable' => ($data['is_taxable'] || $data['tax_percentage'] || $data['tax_amount']) ?? false,
                     'tax_percentage' => $data['tax_percentage'] ?? null,
                     'tax_amount' => $data['tax_amount'] ?? null,
                     'is_tax_percentage' => $data['is_tax_percentage'] ?? false,
@@ -83,21 +83,15 @@ class ProductService
 
     public function list(array $request, int $perPage = 20): array
     {
-        $products = Product::query()
-            ->when(isset($request['search']), function ($query, $search) {
-                $query->where('name', 'like', '%' . $search . '%');
+        $products = $this->applyCommonFilters(Product::query(), $request)
+            ->when(isset($request['category_id']), function ($query) use ($request) {
+                $query->where('product_category_id', $request['category_id']);
             })
-            ->when(isset($request['category_id']), function ($query, $categoryId) {
-                $query->where('category_id', $categoryId);
-            })  
-            ->when(isset($request['merchant_id']), function ($query, $merchantId) {
-                $query->where('merchant_id', $merchantId);
+            ->when(isset($request['is_featured']), function ($query) use ($request) {
+                $query->where('is_featured', $request['is_featured']);
             })
-            ->when(isset($request['is_featured']), function ($query, $isFeatured) {
-                $query->where('is_featured', $isFeatured);
-            })
-            ->when(isset($request['is_discounted']), function ($query, $isDiscounted) {
-                $query->where('is_discounted', $isDiscounted);
+            ->when(isset($request['is_discounted']), function ($query) use ($request) {
+                $query->where('is_discounted', intval($request['is_discounted']));
             })
             ->with(['category', 'variants', 'images'])
             ->paginate($perPage);
@@ -170,13 +164,13 @@ class ProductService
     }
 
     // Categories
-    public function listCategories(Merchant $merchant, int $perPage = 20): array
+    public function listCategories( array $request, int $perPage = 20): array
     {
-        $categories = $merchant->productCategories()
-            ->withCount('products')
-            ->paginate($perPage);
+         $categories = $this->applyCommonFilters(ProductCategory::query(), $request)
+         ->withCount("products")
+         ->paginate($perPage);
 
-        return $this->successResponse( $categories || []);
+        return $this->successResponse( $categories);
     }
 
     public function createCategory(Merchant $merchant, array $data): array
@@ -223,13 +217,23 @@ class ProductService
     }
 
     // Measure Units
-    public function listMeasureUnits(Merchant $merchant, int $perPage = 20): array
+    public function listMeasureUnits( array $request): array
     {
-        $units = $merchant->productMeasureUnits()
-            ->withCount('products')
-            ->paginate($perPage);
+        $units = $this->applyCommonFilters(ProductMeasureUnit::query(), $request)->get();
+        return $this->successResponse($units);
+    }
 
-        return $this->successResponse(['measure_units' => $units]);
+    public function applyCommonFilters($query, $request)
+    {
+        return $query->when(isset($request['is_active']), function ($query) use ($request) {
+            $query->where('is_active', intval($request['is_active']));
+        })
+        ->when(isset($request['search']), function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request['search'] . '%');
+        })
+        ->when(isset($request['merchant_id']), function ($query) use ($request) {
+            $query->where('merchant_id', $request['merchant_id']);
+        });
     }
 
     public function createMeasureUnit(Merchant $merchant, array $data): array

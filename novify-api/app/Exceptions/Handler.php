@@ -76,11 +76,24 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof NotFoundHttpException) {
+
+             // Handle Exception raised for no results found in DB
+             if(str_contains($e->getMessage(), 'results for model')) {
+              
+                return response()->json(
+                $this->successResponse(
+                    [],
+                    '0 records found',
+                    200
+                ),
+                200);
+            }
+
             return response()->json(
                 $this->errorResponse('Resource not found', 404),
                 404
             );
-        }
+        } 
 
         if ($e instanceof AuthenticationException) {
             return response()->json(
@@ -99,9 +112,10 @@ class Handler extends ExceptionHandler
         $message = $e instanceof HttpException ? $e->getMessage() : 'Internal Server Error';
 
         if (config('app.debug')) {
-            return response()->json(
-                $this->errorResponse(
-                    $message,
+
+                return response()->json(
+                    $this->errorResponse(
+                        $message,
                     $statusCode,
                     [
                         'exception' => get_class($e),

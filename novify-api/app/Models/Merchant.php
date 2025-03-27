@@ -97,4 +97,9 @@ class Merchant extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(ProductMeasureUnit::class);
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 } 

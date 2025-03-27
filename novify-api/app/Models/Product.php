@@ -10,8 +10,6 @@ class Product extends Model
 {
     protected $fillable = [
         'merchant_id',
-        'category_id',
-        'measure_unit_id',
         'name',
         'sku',
         'description',
@@ -59,6 +57,14 @@ class Product extends Model
         'expiry_date' => 'date'
     ];
 
+    protected function getFeaturedImageAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+        return config('app.url') . '/' . $value;
+    }
+
     public function merchant(): BelongsTo
     {
         return $this->belongsTo(Merchant::class);
@@ -69,7 +75,7 @@ class Product extends Model
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 
-    public function measureUnit(): BelongsTo
+    public function measure_unit(): BelongsTo
     {
         return $this->belongsTo(ProductMeasureUnit::class, 'product_measure_unit_id');
     }

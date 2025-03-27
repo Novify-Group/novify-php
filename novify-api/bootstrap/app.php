@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Providers\AppServiceProvider;
+use App\Providers\AuthServiceProvider;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -14,10 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withProviders([
         AppServiceProvider::class,
+        AuthServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
+        
         $middleware->alias([
             'multi.auth' => \App\Http\Middleware\MultiAuthMiddleware::class,
+            'cors' => \App\Http\Middleware\Cors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
