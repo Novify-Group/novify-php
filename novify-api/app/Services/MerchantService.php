@@ -214,7 +214,7 @@ class MerchantService
      */
     private function generateAndSaveOtp(Merchant $merchant): string
     {
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otp = str_pad(random_int(0, 999999), 4, '0', STR_PAD_LEFT);
         $merchant->update([
             'otp' => Hash::make($otp),
             'otp_expires_at' => now()->addMinutes(10)
