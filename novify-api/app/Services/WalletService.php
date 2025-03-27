@@ -59,7 +59,7 @@ class WalletService
             return  Wallet::create([
                 'merchant_id' => $merchant->id,
                 'name' => $data['name'] ?? 'Main Wallet',
-                'wallet_number' => $this->generateWalletNumber(),
+                'wallet_number' => $this->generateWalletNumber($merchant),
                 'currency_id' => $currency->id,
                 'currency_code' => $currency->code,
                 'type' => $data['type'] ?? 'MAIN',
@@ -73,9 +73,9 @@ class WalletService
     /**
      * Generate a unique wallet number
      */
-    private function generateWalletNumber(): string
+    private function generateWalletNumber($merchant=null): string
     {
-        $merchant = auth()->user();
+        $merchant = ($merchant)?$merchant:auth()->user();
         $number = str_pad($merchant->id . ($merchant->wallets()->count() + 1) . random_int(0, 999999), 12, '0', STR_PAD_LEFT);
         return $number;
     }
