@@ -102,4 +102,9 @@ class Merchant extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Product::class);
     }
+
+    public function marketArea()
+    {
+        return $this->belongsTo(MarketArea::class);
+    }
 } 

@@ -128,7 +128,7 @@ class MerchantService
      */
     public function verifyOtp(Merchant $merchant, string $otp): array
     {
-        if ($merchant->otp !== $otp || now()->gt($merchant->otp_expires_at)) {
+        if (!Hash::check($otp, $merchant->otp) || now()->gt($merchant->otp_expires_at)) {
             return $this->errorResponse('Invalid or expired OTP', 400);
         }
 
