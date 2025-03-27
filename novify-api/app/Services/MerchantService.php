@@ -205,8 +205,9 @@ class MerchantService
      */
     private function sendOtpViaSMS(Merchant $merchant, string $otp): void
     {
-        $message = "Your OTP is: {$otp}. Valid for 10 minutes.";
-        $this->smsService->send($merchant->phone_number, $message);
+        $appName = config('app.name');
+        $message = "Your {$appName} OTP is: {$otp}. Valid for 10 minutes.";
+        $this->smsService->send($this->formatPhoneNumber($merchant), $message);
     }
 
     /**
@@ -224,5 +225,10 @@ class MerchantService
         $this->sendOtpViaSMS($merchant, $otp);
 
         return $otp;
+    }
+
+    private function formatPhoneNumber(Merchant $merchant): string
+    {
+        return "+".$merchant->country->phone_code . substr($merchant->phone_number, -9);
     }
 } 

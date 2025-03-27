@@ -5,15 +5,42 @@ namespace App\Services\SMS;
 use App\Contracts\Services\SMSServiceContract;
 use App\Jobs\SendBulkSMS;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class AfricasTalkingSMSService implements SMSServiceContract
 {
     public function send(string $phoneNumber, string $message): bool
     {
-        Log::emergency("TESTING SMS LOG");  // This should definitely show up
-        Log::error("SMS to {$phoneNumber}: {$message}");
-        // TODO: Implement actual SMS sending logic
-        return true;
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'apiKey' => config('africatkg.api_key')
+            ])->post(config('africatkg.sms_url'), [
+                'username' => config('africatkg.sms_username'),
+                'message' => $message,
+                //'senderId' => config('africatkg.sms_username'),
+                'phoneNumbers' => [$phoneNumber]
+            ]);
+
+            if ($response->successful()) {
+                Log::info("SMS response: " . $response->body());
+                Log::info("SMS sent successfully to {$phoneNumber}");
+                return true;
+            }
+
+            Log::error("Failed to send SMS to {$phoneNumber}", [
+                'error' => $response->body()
+            ]);
+            return false;
+
+        } catch (\Exception $e) {
+            Log::error("SMS sending failed", [
+                'error' => $e->getMessage(),
+                'phone' => $phoneNumber
+            ]);
+            return false;
+        }
     }
 
     public function sendBulk(array $messages): array
