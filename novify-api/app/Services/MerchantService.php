@@ -182,6 +182,22 @@ class MerchantService
                         'is_main_branch' => $branch->is_main_branch,
                         'is_active' => $branch->is_active
                     ];
+                }),
+                'product_categories' => $merchant->productCategories->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'description' => $category->description,
+                        'is_active' => $category->is_active
+                    ];
+                }),
+                'product_measure_units' => $merchant->productMeasureUnits->map(function ($unit) {
+                    return [
+                        'id' => $unit->id,
+                        'name' => $unit->name,
+                        'symbol' => $unit->symbol,
+                        'is_active' => $unit->is_active
+                    ];
                 })
             ]
         ], 'OTP verified successfully');
