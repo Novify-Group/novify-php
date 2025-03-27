@@ -10,6 +10,7 @@ use App\Traits\ApiResponse;
 use App\Services\WalletService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -35,8 +36,11 @@ class OrderService
             $this->createOrderItems($order, $data['items']);
 
             // Process payment if provided
-            if (isset($data['payment'])) {
+            if (isset($data['payment_method']) && (isset($data['payment']['bill_wallet_number']) && $data['payment_method'] === 'WALLET')) {
+               
+                $order['wallet_number'] = $data['payment']['bill_wallet_number'];
                 $transaction = $this->processPayment($merchant, $order, $data['payment']);
+                Log::info('Payment transaction', ['transaction' => $transaction]);
                 $order->update(['wallet_transaction_id' => $transaction->id]);
             }
 
@@ -104,10 +108,15 @@ class OrderService
     {
         $paymentData['order_id'] = $order->id;
         $paymentData['order_description'] = "Payment for order #{$order->order_number}";
-        
-        $response = $this->walletService->pay($merchant, $paymentData);
-        
+        $paymentData['amount'] = $order->total_amount;
+        $paymentData['wallet_number'] = $order->wallet_number;
+
+        Log::info('Payment data', ['paymentData' => $paymentData]);
+        $response = $this->walletService->pay($merchant, $paymentData,false);
+        Log::info('Payment processing response', ['response' => $response]);
+
         if (!isset($response['data'])) {
+            Log::error('Payment processing failed', ['response' => $response]);
             throw new \Exception('Payment processing failed');
         }
 

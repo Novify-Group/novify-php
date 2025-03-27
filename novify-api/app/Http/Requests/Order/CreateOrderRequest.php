@@ -41,7 +41,7 @@ class CreateOrderRequest extends FormRequest
 
             // Payment Information (Optional)
             'payment' => 'nullable|array',
-            'payment.to_wallet_number' => 'required_with:payment|exists:wallets,wallet_number',
+            'payment.bill_wallet_number' => 'required_with:payment|exists:wallets,wallet_number',
             'payment.amount' => 'required_with:payment|numeric|min:0.01',
             'payment.payment_method' => 'required_with:payment|in:WALLET,CARD,MOBILEMONEY,CASH,BANK,OTHER',
             'payment.payment_method_description' => 'nullable|string|max:255',
@@ -59,7 +59,7 @@ class CreateOrderRequest extends FormRequest
             'items.*.product_id.exists' => 'One or more selected products do not exist',
             'items.*.variant_id.exists' => 'One or more selected product variants do not exist',
             'items.*.quantity.min' => 'Item quantity must be at least 1',
-            'payment.to_wallet_number.exists' => 'The recipient wallet does not exist',
+            'payment.bill_wallet_number.exists' => 'The paying wallet does not exist',
             'payment.amount.min' => 'The payment amount must be greater than zero',
             'payment.payment_method.in' => 'Invalid payment method selected'
         ];

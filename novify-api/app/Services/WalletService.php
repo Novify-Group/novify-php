@@ -12,6 +12,7 @@ use App\Models\WalletTransaction;
 use App\Contracts\Payment\MobileMoneyContract;
 use App\Contracts\Payment\CardPaymentContract;
 use App\Contracts\Wallet\WalletBalanceContract;
+use Illuminate\Support\Facades\Log;
 
 class WalletService
 {
@@ -156,17 +157,25 @@ class WalletService
     }
 
     //Pay for an order
-    public function pay(Merchant $merchant, array $data): array
+    public function pay(Merchant $merchant, array $data, $hasDestinationWallet = true): array
     {
+        Log::info('Payment request', ['data' => $data]);
         $wallet = $this->getTransactionWallet($merchant, $data);
-        $toWallet = Wallet::where('wallet_number', $data['to_wallet_number'])->first();
-        
-        if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet))
+        $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
+
+        Log::info('Payment wallet', ['wallet' => $wallet]);
+        Log::info('Payment to wallet', ['toWallet' => $toWallet]);
+        if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet, $hasDestinationWallet))
             return $validationResult;
-        
+       
+        Log::info('Payment validation passed');
+
         $transaction = $this->createWalletTransaction($data, $wallet, $toWallet, 'PAYMENT');
+        Log::info('Created Payment transaction', ['transaction' => $transaction]);
         $this->processWalletTransfer($wallet, $toWallet, $data['amount']);
         $transaction->update(['tran_status' => 'SUCCESS']);
+
+        Log::info('Payment transaction', ['transaction' => $transaction]);
         return $this->successResponse( $transaction, 'Wallet payment successful');
     }
 
@@ -210,7 +219,7 @@ class WalletService
 
 
     //Validate the transfer eligibility
-    private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null): ?array 
+    private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true): ?array 
     {
         
         if(($fromWallet && $toWallet) && $fromWallet->id === $toWallet->id) 
@@ -222,7 +231,7 @@ class WalletService
         if ($fromWallet->balance < $amount) 
             return $this->errorResponse('Insufficient balance', 400);
         
-        if ($toWallet === null) 
+        if ($toWallet === null && $hasDestinationWallet) 
             return $this->errorResponse('Recipient wallet not found', 404);
 
         return null;
@@ -255,7 +264,7 @@ class WalletService
 
 
     //Process the wallet transfer
-    private function processWalletTransfer(Wallet $fromWallet, Wallet $toWallet, float $amount)
+    private function processWalletTransfer(Wallet $fromWallet, ?Wallet $toWallet, float $amount)
     {
         if($fromWallet) 
             $this->walletBalanceService->debitWallet($fromWallet, $amount);
