@@ -109,7 +109,7 @@ class Merchant extends Authenticatable implements JWTSubject
         return $this->belongsTo(MarketArea::class);
     }
 
-    public function merchantNumberAttribute(): string{
+    public function getMerchantNumberAttribute(): string{
         return str_pad($this->id, 7, '0', STR_PAD_LEFT);
     }
 } 
