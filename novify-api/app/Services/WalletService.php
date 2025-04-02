@@ -170,7 +170,7 @@ class WalletService
        
         Log::info('Payment validation passed');
 
-        $transaction = $this->createWalletTransaction($data, $wallet, $toWallet, 'PAYMENT');
+        $transaction = $this->createWalletTransaction($data, $wallet, $toWallet, ($isOrderCashPayment)?'SALE':'PAYMENT');
         Log::info('Created Payment transaction', ['transaction' => $transaction]);
         $this->processWalletTransfer($wallet, $toWallet, $data['amount']);
         $transaction->update(['tran_status' => 'SUCCESS']);
