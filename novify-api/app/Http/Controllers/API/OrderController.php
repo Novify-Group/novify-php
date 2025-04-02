@@ -38,7 +38,7 @@ class OrderController extends BaseApiController
     {
         return $this->execute(function () use ($request) {
             return $this->orderService->create(
-                $request->user()->merchant,
+                ($request->user()->merchant) ? $request->user()->merchant : $request->user(),
                 $request->validated()
             );
         });
