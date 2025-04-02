@@ -222,7 +222,7 @@ class WalletService
     private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true,$isOrderCashPayment = false): ?array 
     {
         if($isOrderCashPayment && $toWallet)
-            return;
+            return null;
 
         if(($fromWallet && $toWallet) && $fromWallet->id === $toWallet->id) 
             return $this->errorResponse('Cannot transfer to the same wallet', 400);
