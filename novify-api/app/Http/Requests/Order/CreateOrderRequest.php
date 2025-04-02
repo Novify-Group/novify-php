@@ -17,7 +17,7 @@ class CreateOrderRequest extends FormRequest
             // Customer Information
             'customer' => 'required|array',
             'customer.name' => 'required|string|max:255',
-            'customer.phone_number' => 'required|string|max:20',
+            'customer.phone_number' => 'nullable|string|max:20',
             'customer.email' => 'nullable|email|max:255',
             'customer.address' => 'nullable|string|max:500',
             'customer.customer_merchant_id' => 'nullable|exists:merchants,id',

@@ -58,8 +58,10 @@ class OrderService
 
     protected function createOrUpdateCustomer(Merchant $merchant, array $customerData): Customer
     {   
-        if(!isset($customerData['phone_number']))
-            return null;
+        if(!isset($customerData['phone_number'])){
+            $customerData['phone_number']='0000000000';
+            $customerData['name']='Walk-In Customer';
+        }
 
         return Customer::updateOrCreate(
             [
