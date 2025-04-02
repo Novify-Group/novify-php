@@ -79,4 +79,18 @@ class MerchantController extends BaseApiController
             ]);
         });
     }
+
+    public function getMerchants(Request $request): JsonResponse
+    {
+        return $this->execute(function () use ($request) {
+            return $this->merchantService->getMerchants($request);
+        });
+    }
+
+    public function getMerchantByWalletNumber(Request $request): JsonResponse
+    {
+        return $this->execute(function () use ($request) {
+            return $this->merchantService->getMerchantByWalletNumber($request->wallet_number);
+        });
+    }
 } 

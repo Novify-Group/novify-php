@@ -159,6 +159,9 @@ class MerchantUserService
             return $this->errorResponse('Invalid credentials', 401);
         }
 
+        $user['branch'] = $user->branch->only(['id','name','city']);
+        $user['merchant'] = $user->merchant->only(['id','store_name','store_logo_path','merchant_number','country_id','market_area_id','wallets']);
+       
         return $this->successResponse([
             'user' => $user,
             'token' => $token,

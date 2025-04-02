@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Services\WalletService;
 use App\Http\Requests\Wallet\WalletCreateRequest;
+use Illuminate\Http\Request;
 
 class MerchantService
 {
@@ -26,6 +27,69 @@ class MerchantService
         $this->walletService = $walletService;
     }
 
+    public function getMerchants(Request $request): array
+    {
+        $merchants = Merchant::with('country','marketArea','wallets')
+        ->orderBy('created_at', 'desc')
+        ->when($request->has('search'), function ($query) use ($request) {
+            $query->where('first_name', 'like', '%' . $request->search . '%')
+            ->orWhere('last_name', 'like', '%' . $request->search . '%')
+            ->orWhere('email', 'like', '%' . $request->search . '%');
+        })
+        ->when($request->has('status'), function ($query) use ($request) {
+            $query->where('is_active', $request->status);
+        })
+        ->when($request->has('market_area_id'), function ($query) use ($request) {
+            $query->where('market_area_id', $request->market_area_id);
+        })
+        ->when($request->has('country_id'), function ($query) use ($request) {
+            $query->where('country_id', $request->country_id);
+        })
+        ->when($request->has('is_verified'), function ($query) use ($request) {
+            $query->where('is_verified', $request->is_verified);
+        })
+        ->when($request->has('is_active'), function ($query) use ($request) {
+            $query->where('is_active', $request->is_active);
+        })
+        ->when($request->has('is_licenced'), function ($query) use ($request) {
+            $query->where('is_licenced', $request->is_licenced);
+        })
+        ->when($request->has('date_started'), function ($query) use ($request) {
+            $query->where('date_started', $request->date_started);
+        })
+        ->when($request->has('date_started_from'), function ($query) use ($request) {
+            $query->where('date_started', '>=', $request->date_started_from);
+        })
+        ->when($request->has('date_started_to'), function ($query) use ($request) {
+            $query->where('date_started', '<=', $request->date_started_to);
+        })
+        ->when($request->has('wallet_number'), function ($query) use ($request) {
+            $query->whereHas('wallets', function ($query) use ($request) {
+                $query->where('wallet_number', $request->wallet_number );
+            });
+        })
+        ->when($request->has('store_name'), function ($query) use ($request) {
+            $query->where('store_name', 'like', '%' . $request->store_name . '%');
+        })
+        ->paginate($request->per_page??15);
+
+        return $this->successResponse($merchants, 'Merchants retrieved successfully');
+    }
+
+    public function getMerchantByWalletNumber(string $walletNumber): array
+    {
+        $merchant = Merchant::with('country','marketArea','wallets')->whereHas('wallets', function ($query) use ($walletNumber) {
+            $query->where('wallet_number', $walletNumber);
+        })->first();
+
+        return $this->successResponse($merchant, 'Merchant retrieved successfully');
+    }
+
+    public function getMerchant(Merchant $merchant): array
+    {
+        return $this->successResponse($merchant, 'Merchant retrieved successfully');
+    }
+
     /**
      * Register a new merchant
      */
@@ -33,8 +97,8 @@ class MerchantService
     {
         return DB::transaction(function () use ($data) {
             // Handle image uploads
-            $idPicturePath = ImageHelper::saveBase64Image($data['id_picture'], 'merchant_ids');
-            $passportPhotoPath = ImageHelper::saveBase64Image($data['passport_photo'], 'merchant_passports');
+            $idPicturePath = ImageHelper::saveBase64Image($data['id_picture'], 'merchant_kyc');
+            $passportPhotoPath = ImageHelper::saveBase64Image($data['passport_photo'], 'merchant_kyc');
             $storeLogoPath = ImageHelper::saveBase64Image($data['store_logo'] ?? null, 'store_logos');
 
             $merchant = Merchant::create([
@@ -160,6 +224,8 @@ class MerchantService
                 'is_active' => $merchant->is_active,
                 'country' => $merchant->country,
                 'market_area' => $merchant->marketArea,
+                'merchant_number' => $merchant->merchant_number,
+                'role' => 'ADMIN',
                 'wallets' => $merchant->wallets->map(function ($wallet) {
                     return [
                         'id' => $wallet->id,

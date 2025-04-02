@@ -47,6 +47,7 @@ class Merchant extends Authenticatable implements JWTSubject
         'otp_expires_at' => 'datetime',
         'is_verified' => 'boolean'
     ];
+    protected $appends = ['merchant_number'];
 
     public function country()
     {
@@ -106,5 +107,9 @@ class Merchant extends Authenticatable implements JWTSubject
     public function marketArea()
     {
         return $this->belongsTo(MarketArea::class);
+    }
+
+    public function merchantNumberAttribute(): string{
+        return str_pad($this->id, 7, '0', STR_PAD_LEFT);
     }
 } 
