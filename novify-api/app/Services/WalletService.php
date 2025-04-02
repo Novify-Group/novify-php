@@ -157,15 +157,15 @@ class WalletService
     }
 
     //Pay for an order
-    public function pay(Merchant $merchant, array $data, $hasDestinationWallet = true): array
+    public function pay(Merchant $merchant, array $data, $hasDestinationWallet = true,$isOrderCashPayment = false): array
     {
         Log::info('Payment request', ['data' => $data]);
-        $wallet = $this->getTransactionWallet($merchant, $data);
+        $wallet  =  ($isOrderCashPayment)?null:$this->getTransactionWallet($merchant, $data);
         $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
 
         Log::info('Payment wallet', ['wallet' => $wallet]);
         Log::info('Payment to wallet', ['toWallet' => $toWallet]);
-        if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet, $hasDestinationWallet))
+        if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet, $hasDestinationWallet,$isOrderCashPayment))
             return $validationResult;
        
         Log::info('Payment validation passed');
@@ -219,9 +219,11 @@ class WalletService
 
 
     //Validate the transfer eligibility
-    private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true): ?array 
+    private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true,$isOrderCashPayment = false): ?array 
     {
-        
+        if($isOrderCashPayment && $toWallet)
+            return;
+
         if(($fromWallet && $toWallet) && $fromWallet->id === $toWallet->id) 
             return $this->errorResponse('Cannot transfer to the same wallet', 400);
 
@@ -234,6 +236,7 @@ class WalletService
         if ($toWallet === null && $hasDestinationWallet) 
             return $this->errorResponse('Recipient wallet not found', 404);
 
+       
         return null;
     }
 

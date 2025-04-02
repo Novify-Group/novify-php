@@ -39,14 +39,24 @@ class OrderService
             // Create order items
             $this->createOrderItems($order, $data['items']);
 
+            $isOrderCashPayment = true;
+
+            if(!isset($data['payment'])){
+                //for payment processing
+                $$data['payment']['payment_method']= 'CASH';
+            }
+
             // Process payment if provided
-            if (isset($data['payment']) && (isset($data['payment']['bill_wallet_number']) && $data['payment']['payment_method'] === 'WALLET')) {
-               
+            if (isset($data['payment']) && (isset($data['payment']['bill_wallet_number']) && $data['payment']['payment_method'] === 'WALLET')){
                 $order['wallet_number'] = $data['payment']['bill_wallet_number'];
+                $isOrderCashPayment = false;
+            }
+              
+                $$data['payment']['to_wallet_number'] = $merchant->default_wallet->wallet_number;
                 $transaction = $this->processPayment($merchant, $order, $data['payment']);
                 Log::info('Payment transaction', ['transaction' => $transaction]);
                 $order->update(['wallet_transaction_id' => $transaction->id]);
-            }
+            
 
             return $this->successResponse(
                 ['order' => $order->load(['items.product', 'customer', 'walletTransaction'])],
@@ -113,15 +123,16 @@ class OrderService
         }
     }
 
-    protected function processPayment(Merchant $merchant, Order $order, array $paymentData): object
+    protected function processPayment(Merchant $merchant, Order $order, array $paymentData,bool $isOrderCashPayment = false): object
     {
         $paymentData['order_id'] = $order->id;
-        $paymentData['order_description'] = "Payment for order #{$order->order_number}";
+        $paymentData['payment_description'] = "Payment for order #{$order->order_number}";
         $paymentData['amount'] = $order->total_amount;
         $paymentData['wallet_number'] = $order->wallet_number;
+        $paymentData['is_order_payment'] = true;
 
         Log::info('Payment data', ['paymentData' => $paymentData]);
-        $response = $this->walletService->pay($merchant, $paymentData,false);
+        $response = $this->walletService->pay($merchant, $paymentData,true,$isOrderCashPayment);
         Log::info('Payment processing response', ['response' => $response]);
 
         if (!isset($response['data'])) {
