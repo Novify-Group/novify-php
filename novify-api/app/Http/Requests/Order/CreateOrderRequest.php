@@ -59,6 +59,7 @@ class CreateOrderRequest extends FormRequest
             'items.*.product_id.exists' => 'One or more selected products do not exist',
             //'items.*.variant_id.exists' => 'One or more selected product variants do not exist',
             'items.*.quantity.min' => 'Item quantity must be at least 1',
+            'payment.bill_wallet_number.required_if' => 'A paying wallet is required when using wallet payment',
             'payment.bill_wallet_number.exists' => 'The paying wallet does not exist',
             'payment.amount.min' => 'The payment amount must be greater than zero',
             'payment.payment_method.in' => 'Invalid payment method selected'
