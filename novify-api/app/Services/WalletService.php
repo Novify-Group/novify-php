@@ -267,7 +267,7 @@ class WalletService
 
 
     //Process the wallet transfer
-    private function processWalletTransfer(Wallet $fromWallet, ?Wallet $toWallet, float $amount)
+    private function processWalletTransfer(Wallet $fromWallet=null, ?Wallet $toWallet, float $amount)
     {
         if($fromWallet) 
             $this->walletBalanceService->debitWallet($fromWallet, $amount);
