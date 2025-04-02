@@ -15,8 +15,8 @@ class CreateOrderRequest extends FormRequest
     {
         return [
             // Customer Information
-            'customer' => 'required|array',
-            'customer.name' => 'required|string|max:255',
+            'customer' => 'nullable|array',
+            'customer.name' => 'nullable|string|max:255',
             'customer.phone_number' => 'nullable|string|max:20',
             'customer.email' => 'nullable|email|max:255',
             'customer.address' => 'nullable|string|max:500',
@@ -52,12 +52,12 @@ class CreateOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customer.required' => 'Customer information is required',
-            'customer.name.required' => 'Customer name is required',
-            'customer.phone_number.required' => 'Customer phone number is required',
+           // 'customer.required' => 'Customer information is required',
+           // 'customer.name.required' => 'Customer name is required',
+           // 'customer.phone_number.required' => 'Customer phone number is required',
             'items.required' => 'At least one order item is required',
             'items.*.product_id.exists' => 'One or more selected products do not exist',
-            'items.*.variant_id.exists' => 'One or more selected product variants do not exist',
+            //'items.*.variant_id.exists' => 'One or more selected product variants do not exist',
             'items.*.quantity.min' => 'Item quantity must be at least 1',
             'payment.bill_wallet_number.exists' => 'The paying wallet does not exist',
             'payment.amount.min' => 'The payment amount must be greater than zero',
