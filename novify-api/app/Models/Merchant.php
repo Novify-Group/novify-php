@@ -47,7 +47,7 @@ class Merchant extends Authenticatable implements JWTSubject
         'otp_expires_at' => 'datetime',
         'is_verified' => 'boolean'
     ];
-    protected $appends = ['merchant_number'];
+    protected $appends = ['merchant_number','default_wallet'];
 
     public function country()
     {
@@ -112,4 +112,11 @@ class Merchant extends Authenticatable implements JWTSubject
     public function getMerchantNumberAttribute(): string{
         return str_pad($this->id, 7, '0', STR_PAD_LEFT);
     }
+
+    public function getDefaultWalletAttribute(){
+        $wallet = $this->wallets()->where('is_default', true)->first();
+        return $wallet ? $wallet->only(['id','wallet_number','balance','status']) : null;
+    }
+
+    
 } 
