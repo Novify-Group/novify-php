@@ -41,7 +41,7 @@ class OrderService
 
             $isOrderCashPayment = true;
 
-            if(!isset($data['payment'])){
+            if(!isset($data['payment']['payment_method'])){
                 //for payment processing
                 $$data['payment']['payment_method']= 'CASH';
             }
