@@ -83,7 +83,7 @@ class CreateOrderRequest extends FormRequest
         }
 
         // Format payment amounts if present
-        if ($this->has('payment')) {
+        if ($this->has('payment') && isset($this->payment['amount'])) {
             $this->merge([
                 'payment' => array_merge($this->payment, [
                     'amount' => (float) $this->payment['amount']
