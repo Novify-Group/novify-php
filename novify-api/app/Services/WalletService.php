@@ -219,7 +219,7 @@ class WalletService
 
 
     //Validate the transfer eligibility
-    private function validateTransferEligibility(Wallet $fromWallet, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true,$isOrderCashPayment = false): ?array 
+    private function validateTransferEligibility(Wallet $fromWallet=null, float $amount, ?Wallet $toWallet = null, $hasDestinationWallet = true,$isOrderCashPayment = false): ?array 
     {
         if($isOrderCashPayment && $toWallet)
             return null;
