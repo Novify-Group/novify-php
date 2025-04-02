@@ -55,7 +55,7 @@ class OrderService
             
 
             return $this->successResponse(
-                ['order' => $order->load(['items.product', 'customer', 'walletTransaction'])],
+                $order->load(['items.product', 'customer', 'walletTransaction']),
                 'Order created successfully',
                 201
             );
