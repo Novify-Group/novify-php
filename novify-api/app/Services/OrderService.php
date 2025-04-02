@@ -40,7 +40,7 @@ class OrderService
             $this->createOrderItems($order, $data['items']);
 
             // Process payment if provided
-            if (isset($data['payment_method']) && (isset($data['payment']['bill_wallet_number']) && $data['payment_method'] === 'WALLET')) {
+            if (isset($data['payment']) && (isset($data['payment']['bill_wallet_number']) && $data['payment']['payment_method'] === 'WALLET')) {
                
                 $order['wallet_number'] = $data['payment']['bill_wallet_number'];
                 $transaction = $this->processPayment($merchant, $order, $data['payment']);
