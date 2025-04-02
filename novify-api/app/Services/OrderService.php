@@ -46,11 +46,13 @@ class OrderService
             if (isset($data['payment']) && (isset($data['payment']['bill_wallet_number']) && $data['payment']['payment_method'] === 'WALLET')){
                 $order['wallet_number'] = $data['payment']['bill_wallet_number'];
                 $isOrderCashPayment = false;
+            }else{
+                $data['payment']['to_wallet_number'] = $merchant->default_wallet->wallet_number;
             }
               
-                $transaction = $this->processPayment($merchant, $order, $data['payment'],$isOrderCashPayment);
-                Log::info('Payment transaction', ['transaction' => $transaction]);
-                $order->update(['wallet_transaction_id' => $transaction->id]);
+            $transaction = $this->processPayment($merchant, $order, $data['payment'],$isOrderCashPayment);
+            Log::info('Payment transaction', ['transaction' => $transaction]);
+            $order->update(['wallet_transaction_id' => $transaction->id]);
             
 
             return $this->successResponse(
