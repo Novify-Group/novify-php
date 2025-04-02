@@ -40,11 +40,7 @@ class OrderService
             $this->createOrderItems($order, $data['items']);
 
             $isOrderCashPayment = true;
-
-            if(!isset($data['payment']['payment_method'])){
-                //for payment processing
-                $$data['payment']['payment_method']= 'CASH';
-            }
+            $data['payment']['payment_method'] = $data['payment']['payment_method'] ?? 'CASH';
 
             // Process payment if provided
             if (isset($data['payment']) && (isset($data['payment']['bill_wallet_number']) && $data['payment']['payment_method'] === 'WALLET')){
@@ -52,8 +48,7 @@ class OrderService
                 $isOrderCashPayment = false;
             }
               
-                $$data['payment']['to_wallet_number'] = $merchant->default_wallet->wallet_number;
-                $transaction = $this->processPayment($merchant, $order, $data['payment']);
+                $transaction = $this->processPayment($merchant, $order, $data['payment'],$isOrderCashPayment);
                 Log::info('Payment transaction', ['transaction' => $transaction]);
                 $order->update(['wallet_transaction_id' => $transaction->id]);
             
