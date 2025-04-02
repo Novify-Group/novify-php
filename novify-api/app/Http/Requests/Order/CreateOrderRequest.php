@@ -23,11 +23,11 @@ class CreateOrderRequest extends FormRequest
             'customer.customer_merchant_id' => 'nullable|exists:merchants,id',
 
             // Order Details
-            'subtotal' => 'required|numeric|min:0',
-            'tax_amount' => 'nullable|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0',
-            'total_amount' => 'required|numeric|min:0',
-            'notes' => 'nullable|string|max:1000',
+            //'subtotal' => 'required|numeric|min:0',
+           // 'tax_amount' => 'nullable|numeric|min:0',
+            //'discount_amount' => 'nullable|numeric|min:0',
+            //'total_amount' => 'required|numeric|min:0',
+            //'notes' => 'nullable|string|max:1000',
 
             // Order Items
             'items' => 'required|array|min:1',
@@ -35,9 +35,9 @@ class CreateOrderRequest extends FormRequest
             'items.*.variant_id' => 'nullable|exists:product_variants,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.tax_amount' => 'nullable|numeric|min:0',
-            'items.*.discount_amount' => 'nullable|numeric|min:0',
-            'items.*.total_amount' => 'required|numeric|min:0',
+            //'items.*.tax_amount' => 'nullable|numeric|min:0',
+            //'items.*.discount_amount' => 'nullable|numeric|min:0',
+            //'items.*.total_amount' => 'required|numeric|min:0',
 
             // Payment Information (Optional)
             'payment' => 'nullable|array',
