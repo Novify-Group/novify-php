@@ -74,9 +74,9 @@ class CreateOrderRequest extends FormRequest
                     return array_merge($item, [
                         'quantity' => (int) $item['quantity'],
                         'unit_price' => (float) $item['unit_price'],
-                        'tax_amount' => (float) ($item['tax_amount'] ?? 0),
-                        'discount_amount' => (float) ($item['discount_amount'] ?? 0),
-                        'total_amount' => (float) $item['total_amount'],
+                       // 'tax_amount' => (float) ($item['tax_amount'] ?? 0),
+                       // 'discount_amount' => (float) ($item['discount_amount'] ?? 0),
+                       // 'total_amount' => (float) $item['total_amount'],
                     ]);
                 })->toArray()
             ]);
