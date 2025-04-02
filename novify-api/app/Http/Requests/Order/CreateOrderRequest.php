@@ -41,9 +41,9 @@ class CreateOrderRequest extends FormRequest
 
             // Payment Information (Optional)
             'payment' => 'nullable|array',
-            'payment.bill_wallet_number' => 'required_with:payment|exists:wallets,wallet_number',
-            'payment.amount' => 'required_with:payment|numeric|min:0.01',
-            'payment.payment_method' => 'required_with:payment|in:WALLET,CARD,MOBILEMONEY,CASH,BANK,OTHER',
+           // 'payment.bill_wallet_number' => 'required_with:payment|exists:wallets,wallet_number',
+           // 'payment.amount' => 'required_with:payment|numeric|min:0.01',
+            //'payment.payment_method' => 'required_with:payment|in:WALLET,CARD,MOBILEMONEY,CASH,BANK,OTHER',
             'payment.payment_method_description' => 'nullable|string|max:255',
             'payment.customer_number' => 'nullable|string|max:255',
         ];
