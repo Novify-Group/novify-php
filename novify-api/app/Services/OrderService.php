@@ -29,9 +29,13 @@ class OrderService
             // Create or update customer
             $customer = $this->createOrUpdateCustomer($merchant, $data['customer']);
 
+            $data['total_amount'] = collect($data['items'])->sum(function ($item) {
+                return $item['quantity'] * $item['unit_price'];
+            });
+
+            $data['subtotal'] = $data['total_amount'] - ($data['tax_amount'] ?? 0) - ($data['discount_amount'] ?? 0);
             // Create order
             $order = $this->createOrder($merchant, $customer, $data);
-
             // Create order items
             $this->createOrderItems($order, $data['items']);
 
@@ -53,7 +57,10 @@ class OrderService
     }
 
     protected function createOrUpdateCustomer(Merchant $merchant, array $customerData): Customer
-    {
+    {   
+        if(!isset($customerData['phone_number']))
+            return null;
+
         return Customer::updateOrCreate(
             [
                 'merchant_id' => $merchant->id,
@@ -69,11 +76,11 @@ class OrderService
         );
     }
 
-    protected function createOrder(Merchant $merchant, Customer $customer, array $data): Order
+    protected function createOrder(Merchant $merchant, Customer $customer=null, array $data): Order
     {
         return Order::create([
             'merchant_id' => $merchant->id,
-            'customer_id' => $customer->id,
+            'customer_id' => ($customer) ? $customer->id : null,
             'order_number' => $this->generateOrderNumber(),
             'subtotal' => $data['subtotal'],
             'tax_amount' => $data['tax_amount'] ?? 0,
