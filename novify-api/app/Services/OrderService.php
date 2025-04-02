@@ -105,7 +105,7 @@ class OrderService
                 'unit_price' => $item['unit_price'],
                 'tax_amount' => $item['tax_amount'] ?? 0,
                 'discount_amount' => $item['discount_amount'] ?? 0,
-                'total_amount' => $item['total_amount']
+                'total_amount' => $item['unit_price'] * $item['quantity']
             ]);
 
             // Update product inventory
