@@ -11,6 +11,7 @@ class AfricasTalkingSMSService implements SMSServiceContract
 {
     public function send(string $phoneNumber, string $message): bool
     {
+        Log::info("Sending SMS to {$phoneNumber} with message {$message}");
         try {
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
