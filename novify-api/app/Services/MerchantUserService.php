@@ -37,7 +37,7 @@ class MerchantUserService
         ]);
 
         return $this->successResponse(
-            ['user' => $user],
+             $user,
             'User created successfully',
             201
         );
@@ -63,9 +63,10 @@ class MerchantUserService
 
         $user->update($data);
 
-        return $this->successResponse([
-            'user' => $user->fresh()
-        ], 'User updated successfully');
+        return $this->successResponse(
+            $user->fresh(),
+            'User updated successfully'
+        );
     }
 
     public function listUsers(Merchant $merchant, string $role=null, int $branchId = null,int $perPage = 20): array
@@ -109,9 +110,10 @@ class MerchantUserService
             'is_active' => !$user->is_active
         ]);
 
-        return $this->successResponse([
-            'user' => $user->fresh()
-        ], 'User status updated successfully');
+        return $this->successResponse(
+            $user->fresh(),
+            'User status updated successfully'
+        );
     }
 
     public function resetPassword(MerchantUser $user): array
@@ -127,9 +129,10 @@ class MerchantUserService
             'force_password_change' => true // Force user to change password after reset
         ]);
 
-        return $this->successResponse([
-            'password' => $newPassword
-        ], 'Password reset successfully');
+        return $this->successResponse(
+            $user->fresh(),
+            'Password reset successfully'
+        );
     }
 
     public function login(array $credentials): array
@@ -165,6 +168,7 @@ class MerchantUserService
         return $this->successResponse([
             'user' => $user,
             'token' => $token,
+            'merchant' => $user->merchant->only(['id','store_name','store_logo_path','merchant_number','country_id','market_area_id','wallets']),
             'force_password_change' => $user->force_password_change
         ], 'Login successful');
     }
