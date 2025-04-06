@@ -21,6 +21,24 @@ class MerchantUserService
         $photoPath = ImageHelper::saveBase64Image($data['photo'] ?? null, 'user_photos');
         $idPicturePath = ImageHelper::saveBase64Image($data['id_picture'] ?? null, 'user_ids');
 
+        if($data['id']){
+            $user = $merchant->users()->find($data['id']);
+            $user = $merchant->users()->update([
+                'branch_id' => $data['branch_id'] ?? $user->branch_id,
+                'gender' => $data['gender'] ?? $user->gender,
+                'dob' => $data['dob'] ?? $user->dob,  
+                'first_name' => $data['first_name'] ?? $user->first_name,
+                'last_name' => $data['last_name'] ?? $user->last_name,
+                'phone_number' => $data['phone_number'] ?? $user->phone_number,
+                'email' => $data['email'] ?? $user->email,
+                'password' => Hash::make($data['password'] ?? $user->password),
+                'photo_path' => $photoPath ?? $user->photo_path,
+                'id_picture_path' => $idPicturePath ?? $user->id_picture_path,
+                'role' =>$data['role'] ?? $user->role,
+                'force_password_change' => $data['password'] ? true : false // New users must change password on first login
+            ]);
+        }else{
+
         $user = $merchant->users()->create([
             'branch_id' => $data['branch_id'] ?? null,
             'gender' => $data['gender'] ?? null,
@@ -36,9 +54,11 @@ class MerchantUserService
             'force_password_change' => true // New users must change password on first login
         ]);
 
+       }
+
         return $this->successResponse(
              $user,
-            'User created successfully',
+            'User '.($data['id'] ? 'updated' : 'created').' successfully',
             201
         );
     }
