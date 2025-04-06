@@ -33,6 +33,7 @@ class UserController extends BaseApiController
                 'dob' => 'nullable|date',
                 'photo' => 'nullable|string', // base64
                 'id_picture' => 'nullable|string', // base64
+                'id' => 'nullable|exists:merchant_users,id',
             ]);
 
             return $this->userService->createUser($request->user(), $request->all());
