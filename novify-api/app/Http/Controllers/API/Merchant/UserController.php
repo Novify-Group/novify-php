@@ -41,6 +41,7 @@ class UserController extends BaseApiController
 
     public function listAttendants(Request $request): JsonResponse
     {
+
         return $this->execute(function () use ($request) {
             $perPage = $request->input('per_page', 20);
             return $this->userService->listUsers($request->user(), $request->role, $request->branchId, $perPage);

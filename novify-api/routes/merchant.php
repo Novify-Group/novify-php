@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('merchant')->middleware('multi.auth')->group(function () {
 
     Route::get('/', [MerchantController::class, 'getMerchants']);
-    Route::get('/{wallet_number}', [MerchantController::class, 'getMerchantByWalletNumber']);
+    Route::get('/wallet/{wallet_number}', [MerchantController::class, 'getMerchantByWalletNumber']);
 
     Route::middleware('auth:api')->group(function () {
     // Branch management

@@ -163,7 +163,7 @@ class OrderService
             ->latest()
             ->paginate($perPage);
 
-        return $this->successResponse(['orders' => $orders]);
+        return $this->successResponse( $orders);
     }
 
     public function show(Order $order): array
