@@ -384,7 +384,12 @@ class ProductService
         if(count($tempMeasureUnits) > 0)
             $this->chooseTempMeasureUnits($merchant, $tempMeasureUnits);
 
-        return $this->successResponse(null, 'Temp data chosen successfully');
+        $tempData = [
+            'product_categories' => $merchant->productCategories,
+            'product_measure_units' => $merchant->productMeasureUnits
+        ];
+
+        return $this->successResponse($tempData, 'Temp data chosen successfully');
     }
     
 
