@@ -389,7 +389,7 @@ class ProductService
             'product_measure_units' => $merchant->productMeasureUnits
         ];
 
-        return $this->successResponse($tempData, 'Temp data chosen successfully');
+        return $this->successResponse($tempData, 'Preferences set successfully');
     }
     
 
