@@ -397,6 +397,7 @@ class ProductService
     {
         // Get the temp categories with their data
         $tempCategories = TempCategory::whereIn('id', $tempCategoryIds)
+            ->whereNotIn('id', $merchant->productCategories->pluck('temp_category_id'))
             ->get()
             ->map(function ($tempCategory) use ($merchant) {
                 return [
@@ -418,6 +419,7 @@ class ProductService
     {
         // Get the temp measure units with their data
         $tempMeasureUnits = TempMeasureUnit::whereIn('id', $tempMeasureUnitIds)
+            ->whereNotIn('id', $merchant->productMeasureUnits->pluck('temp_measure_unit_id'))
             ->get()
             ->map(function ($tempMeasureUnit) use ($merchant) {
                 return [
