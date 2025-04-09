@@ -24,7 +24,7 @@ class OrderController extends BaseApiController
     {
         return $this->execute(function () use ($request) {
             return $this->orderService->list(
-                $request->user()->merchant,
+                ($request->user()->merchant) ? $request->user()->merchant : $request->user(),
                 $request->all(),
                 $request->input('per_page', 20)
             );
