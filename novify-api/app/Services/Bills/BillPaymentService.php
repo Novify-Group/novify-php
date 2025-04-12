@@ -26,15 +26,11 @@ class BillPaymentService
     }
 
     public function validateBill(
-        BillerItem $billerItem,
-        string $billCode,
-        ?float $amount = null
+        array $data
     ): array {
         try {
             $validationResponse = $this->billerService->validateBill(
-                $billerItem->biller->code,
-                $billCode,
-                $amount
+                $data
             );
 
             return $validationResponse;
@@ -44,42 +40,32 @@ class BillPaymentService
     }
 
     public function processBillPayment(
-        BillerItem $billerItem,
-        Wallet $wallet,
-        string $billCode,
-        float $amount,
-        int $paymentMethodId,
-        array $validationData
+        array $data
     ): BillPayment {
 
         return DB::transaction(function () use (
-            $billerItem,
-            $wallet,
-            $billCode,
-            $amount,
-            $paymentMethodId,
-            $validationData
+            $data
         ) {
             // Create payment record
             $payment = BillPayment::create([
-                'biller_item_id' => $billerItem->id,
-                'wallet_id' => $wallet->id,
-                'payment_method_id' => $paymentMethodId,
-                'bill_code' => $billCode,
-                'amount' => $amount,
+                'biller_item_id' => $data['biller_item_id'],
+                'wallet_id' => $data['wallet_id'],
+                'payment_method_id' => $data['payment_method_id'],
+                'bill_code' => $data['bill_code'],
+                'amount' => $data['amount'],
                 'status' => 'pending',
                 'reference' => $this->generateReference(),
-                'validation_data' => $validationData
+                'validation_data' => $data['validation_data']
             ]);
 
             // Process payment with biller service
             try {
                 $paymentResponse = $this->billerService->processBillPayment([
                     'reference' => $payment->reference,
-                    'biller_code' => $billerItem->biller->code,
-                    'bill_code' => $billCode,
-                    'amount' => $amount,
-                    'validation_data' => $validationData
+                    'biller_code' => $data['biller_code'],
+                    'bill_code' => $data['bill_code'],
+                    'amount' => $data['amount'],
+                    'validation_data' => $data['validation_data']
                 ]);
 
                 // // Deduct from wallet
