@@ -129,7 +129,12 @@ class WalletService
             return $this->errorResponse('Wallet not found', 404);
         }
 
-        $transaction = $this->createWalletTransaction($data, null, $wallet, 'TOPUP');
+        return $this->processNonWalletPayment($data, $wallet, 'TOPUP');
+    }
+
+    public function processNonWalletPayment($data, Wallet $wallet,$type='TOPUP')
+    {
+        $transaction = $this->createWalletTransaction($data, null, $wallet,$type);
 
         if ($data['payment_method'] === 'MOBILEMONEY') {
             $paymentStatus = $this->mobileMoneyService->receiveMoney([
@@ -149,22 +154,30 @@ class WalletService
         if ($paymentStatus['success'] !== true) 
             return $this->errorResponse('Payment failed', 400);
         
-        //Increase Balance
-        $this->walletBalanceService->creditWallet($wallet, $data['amount']);
         //update transaction status
         $transaction->update(['tran_status' => 'SUCCESS']); 
+        //Increase Balance
+        
+        $this->walletBalanceService->creditWallet($wallet, $data['amount']);
         return $this->successResponse( $transaction, 'Wallet topup successful');
     }
 
     //Pay for an order
     public function pay(Merchant $merchant, array $data, $hasDestinationWallet = true,$isOrderCashPayment = false): array
     {
+       
+        if($data['payment_method'] === 'MOBILEMONEY' || $data['payment_method'] === 'CARD'){
+            $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
+            return $this->processNonWalletPayment($data, $toWallet, 'PAYMENT');
+        }
+       
         Log::info('Payment request', ['data' => $data]);
         $wallet  =  ($isOrderCashPayment)?null:$this->getTransactionWallet($merchant, $data);
         $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
 
         Log::info('Payment wallet', ['wallet' => $wallet]);
         Log::info('Payment to wallet', ['toWallet' => $toWallet]);
+
         if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet, $hasDestinationWallet,$isOrderCashPayment))
             return $validationResult;
        
