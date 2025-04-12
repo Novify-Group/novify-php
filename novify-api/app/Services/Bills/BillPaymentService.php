@@ -9,6 +9,8 @@ use App\Services\Bills\BillerServiceConnection;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\ValidationException;
 use App\Exceptions\PaymentException;
+use App\Services\WalletService;
+
 
 class BillPaymentService
 {
@@ -80,18 +82,18 @@ class BillPaymentService
                     'validation_data' => $validationData
                 ]);
 
-                // Deduct from wallet
-                $this->walletService->debit(
-                    $wallet,
-                    $amount,
-                    "Bill payment for {$billerItem->biller->name}",
-                    'bill_payment',
-                    $payment->id
-                );
+                // // Deduct from wallet
+                // $this->walletService->debit(
+                //     $wallet,
+                //     $amount,
+                //     "Bill payment for {$billerItem->biller->name}",
+                //     'bill_payment',
+                //     $payment->id
+                // );
 
                 // Update payment record
                 $payment->update([
-                    'status' => 'completed',
+                    'status' => 'COMPLETED',
                     'provider_reference' => $paymentResponse['provider_reference'] ?? null,
                     'payment_data' => $paymentResponse
                 ]);
@@ -100,7 +102,7 @@ class BillPaymentService
                 
             } catch (\Exception $e) {
                 $payment->update([
-                    'status' => 'failed',
+                    'status' => 'FAILED',
                     'meta_data' => ['error' => $e->getMessage()]
                 ]);
                 throw new PaymentException("Payment failed: " . $e->getMessage());
