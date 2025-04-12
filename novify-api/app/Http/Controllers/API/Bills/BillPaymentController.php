@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\Bills;
 use App\Http\Controllers\API\BaseApiController;
 use App\Models\BillerItem;
 use App\Models\Wallet;
-use App\Services\BillPaymentService;
+use App\Services\Bills\BillPaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
