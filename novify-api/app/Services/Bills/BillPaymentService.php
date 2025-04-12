@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Bills;
 
 use App\Models\BillPayment;
 use App\Models\BillerItem;
@@ -49,6 +49,7 @@ class BillPaymentService
         int $paymentMethodId,
         array $validationData
     ): BillPayment {
+
         return DB::transaction(function () use (
             $billerItem,
             $wallet,
@@ -96,6 +97,7 @@ class BillPaymentService
                 ]);
 
                 return $payment;
+                
             } catch (\Exception $e) {
                 $payment->update([
                     'status' => 'failed',
