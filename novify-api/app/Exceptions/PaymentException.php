@@ -16,6 +16,7 @@ class PaymentException extends Exception
         return response()->json([
             'message' => $this->getMessage(),
             'status' => 'error',
+            'success' => false,
         ], 400);
     }
 
@@ -24,6 +25,7 @@ class PaymentException extends Exception
         return response()->json([
             'message' => $this->getMessage(),
             'status' => 'error',
+            'success' => false,
         ], 400);
     }
 }

@@ -16,6 +16,7 @@ class ValidationException extends Exception
         return response()->json([
             'message' => $this->getMessage(),
             'status' => 'error',
+            'success' => false,
         ], 422);
     }
 
@@ -24,6 +25,7 @@ class ValidationException extends Exception
         return response()->json([
             'message' => $this->getMessage(),
             'status' => 'error',
+            'success' => false,
         ], 422);
     }
 }
