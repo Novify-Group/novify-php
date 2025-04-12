@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             TempCategorySeeder::class,
             TempMeasureUnitSeeder::class,
+            BillPaymentSeeder::class,
         ]);
     }
 }

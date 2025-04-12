@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\API\TestController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\BillCategoryController;
+use App\Http\Controllers\Api\BillerController;
+use App\Http\Controllers\Api\BillPaymentController;
 
 // Include all route files
 Route::get('/test', [TestController::class, 'register']);

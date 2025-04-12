@@ -11,6 +11,8 @@ use App\Contracts\Payment\CardPaymentContract;
 use App\Services\Payment\Integrations\CardPaymentGateway;
 use App\Contracts\Wallet\WalletBalanceContract;
 use App\Services\Wallet\InternalWalletBalanceService;
+use App\Services\Bills\BillerServiceConnection;
+use App\Services\Bills\Mock\MockBillerService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(WalletBalanceContract::class, function ($app) {
             return new InternalWalletBalanceService();
+        });
+
+        $this->app->bind(BillerServiceConnection::class, function ($app) {
+            return new MockBillerService();
         });
     }   
 
