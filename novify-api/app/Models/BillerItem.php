@@ -19,8 +19,20 @@ class BillerItem extends Model
         'description'
     ];
 
+    protected $appends =['item_input_fields'];
     public function biller(): BelongsTo
     {
         return $this->belongsTo(Biller::class);
+    }
+
+    public function getItemInputFieldsAttribute(){
+
+        $beneficiaryLabel = (strpos($this->name,'rent')>-1)?'PRN':'Beneficiary Account';
+        
+        return [
+            ['label'=>$beneficiaryLabel,'is_required'=>true,'postField'=>'beneficiary_account','type'=>'string'],
+            ['label'=>'Narration','is_required'=>false,'postField'=>'narration','type'=>'string']
+        ];
+
     }
 } 
