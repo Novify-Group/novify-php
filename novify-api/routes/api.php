@@ -16,4 +16,5 @@ Route::middleware('cors')->group(function () {
     require __DIR__.'/wallet.php';
     require __DIR__.'/products.php';
     require __DIR__.'/orders.php';
+    require __DIR__.'/bills.php';
 });
