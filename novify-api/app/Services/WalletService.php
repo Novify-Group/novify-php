@@ -132,9 +132,9 @@ class WalletService
         return $this->processNonWalletPayment($data, $wallet, 'TOPUP');
     }
 
-    public function processNonWalletPayment($data, Wallet $wallet,$type='TOPUP')
+    public function processNonWalletPayment($data, Wallet $toWallet,$fromWallet=null,$type='TOPUP')
     {
-        $transaction = $this->createWalletTransaction($data, null, $wallet,$type);
+        $transaction = $this->createWalletTransaction($data, $fromWallet, $toWallet,$type);
 
         if ($data['payment_method'] === 'MOBILEMONEY') {
             $paymentStatus = $this->mobileMoneyService->receiveMoney([
@@ -158,34 +158,34 @@ class WalletService
         $transaction->update(['tran_status' => 'SUCCESS']); 
         //Increase Balance
         
-        $this->walletBalanceService->creditWallet($wallet, $data['amount']);
-        return $this->successResponse( $transaction, 'Wallet topup successful');
+        $this->walletBalanceService->creditWallet($toWallet, $data['amount']);
+        return $this->successResponse( $transaction, 'Your '.($type === 'TOPUP'?'topup':'payment').' was successful');
     }
 
     //Pay for an order
     public function pay(Merchant $merchant, array $data, $hasDestinationWallet = true,$isOrderCashPayment = false): array
     {
-       
-        if($data['payment_method'] === 'MOBILEMONEY' || $data['payment_method'] === 'CARD'){
-            $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
-            return $this->processNonWalletPayment($data, $toWallet, 'PAYMENT');
-        }
-       
         Log::info('Payment request', ['data' => $data]);
-        $wallet  =  ($isOrderCashPayment)?null:$this->getTransactionWallet($merchant, $data);
+        $payingWallet  = $this->getTransactionWallet($merchant, $data);
         $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
 
-        Log::info('Payment wallet', ['wallet' => $wallet]);
+        if($data['payment_method'] === 'MOBILEMONEY' || $data['payment_method'] === 'CARD' || $isOrderCashPayment){
+            $toWallet = ($hasDestinationWallet)?Wallet::where('wallet_number', $data['to_wallet_number'])->first():null;
+            return $this->processNonWalletPayment($data, $toWallet,$payingWallet, 'PAYMENT');
+        }
+       
+       
+        Log::info('Payment wallet', ['wallet' => $payingWallet]);
         Log::info('Payment to wallet', ['toWallet' => $toWallet]);
 
-        if ($validationResult = $this->validateTransferEligibility($wallet, $data['amount'], $toWallet, $hasDestinationWallet,$isOrderCashPayment))
+        if ($validationResult = $this->validateTransferEligibility($payingWallet, $data['amount'], $toWallet, $hasDestinationWallet,$isOrderCashPayment))
             return $validationResult;
        
         Log::info('Payment validation passed');
 
-        $transaction = $this->createWalletTransaction($data, $wallet, $toWallet, ($isOrderCashPayment)?'SALE':'PAYMENT');
+        $transaction = $this->createWalletTransaction($data, $payingWallet, $toWallet, ($isOrderCashPayment)?'SALE':'PAYMENT');
         Log::info('Created Payment transaction', ['transaction' => $transaction]);
-        $this->processWalletTransfer($wallet, $toWallet, $data['amount']);
+        $this->processWalletTransfer($payingWallet, $toWallet, $data['amount']);
         $transaction->update(['tran_status' => 'SUCCESS']);
 
         Log::info('Payment transaction', ['transaction' => $transaction]);
