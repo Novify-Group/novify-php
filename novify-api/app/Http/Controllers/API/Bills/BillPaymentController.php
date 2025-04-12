@@ -29,11 +29,7 @@ class BillPaymentController extends BaseApiController
 
         $billerItem = BillerItem::findOrFail($request->biller_item_id);
         
-        $validationResponse = $this->billPaymentService->validateBill(
-            $billerItem,
-            $request->bill_code,
-            $request->amount
-        );
+        $validationResponse = $this->billPaymentService->validateBill($request->all());
 
         return $this->successResponse($validationResponse);
     }
@@ -53,12 +49,7 @@ class BillPaymentController extends BaseApiController
         $wallet = Wallet::findOrFail($request->wallet_id);
 
         $payment = $this->billPaymentService->processBillPayment(
-            $billerItem,
-            $wallet,
-            $request->bill_code,
-            $request->amount,
-            $request->payment_method_id,
-            $request->validation_data
+            $request->all()
         );
 
         return $this->successResponse($payment);
