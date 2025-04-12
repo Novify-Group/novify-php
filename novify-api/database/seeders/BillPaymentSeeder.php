@@ -16,17 +16,17 @@ class BillPaymentSeeder extends Seeder
             [
                 'name' => 'Housing & Utilities',
                 'description' => 'Housing, rent, and utility payments',
-                'status' => 'active'
+                'is_active' => true
             ],
             [
                 'name' => 'Shopping',
                 'description' => 'Retail and marketplace payments',
-                'status' => 'active'
+                'is_active' => true
             ],
             [
                 'name' => 'Internet & TV',
                 'description' => 'Internet and cable TV services',
-                'status' => 'active'
+                'is_active' => true
             ]
         ];
 
@@ -40,7 +40,7 @@ class BillPaymentSeeder extends Seeder
             'name' => 'My Market',
             'code' => 'MYMARKET',
             'logo' => 'mymarket-logo.png',
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'My Market - Your one-stop shopping destination'
         ]);
 
@@ -52,7 +52,7 @@ class BillPaymentSeeder extends Seeder
             'min_amount' => 100.00,
             'max_amount' => 100000.00,
             'is_amount_fixed' => false,
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'Rental payment for My Market properties'
         ]);
 
@@ -62,7 +62,7 @@ class BillPaymentSeeder extends Seeder
             'name' => 'City Utilities',
             'code' => 'CITYUTIL',
             'logo' => 'cityutil-logo.png',
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'City Utilities and Services'
         ]);
 
@@ -74,7 +74,7 @@ class BillPaymentSeeder extends Seeder
             'min_amount' => 10.00,
             'max_amount' => 1000.00,
             'is_amount_fixed' => false,
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'Water utility bill payment'
         ]);
 
@@ -85,7 +85,7 @@ class BillPaymentSeeder extends Seeder
             'min_amount' => 20.00,
             'max_amount' => 2000.00,
             'is_amount_fixed' => false,
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'Electricity bill payment'
         ]);
 
@@ -95,7 +95,7 @@ class BillPaymentSeeder extends Seeder
             'name' => 'FastNet ISP',
             'code' => 'FASTNET',
             'logo' => 'fastnet-logo.png',
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'High-speed internet services'
         ]);
 
@@ -106,7 +106,7 @@ class BillPaymentSeeder extends Seeder
             'code' => 'NET-MONTHLY',
             'amount' => 49.99,
             'is_amount_fixed' => true,
-            'status' => 'active',
+            'is_active' => true,
             'description' => 'Monthly internet subscription'
         ]);
     }
