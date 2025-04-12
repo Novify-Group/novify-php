@@ -43,19 +43,25 @@ class BillPaymentService
         array $data
     ): BillPayment {
 
+        $billerItem = BillerItem::findOrFail($data['biller_item_id']);
+        $wallet = Wallet::where('wallet_number', $data['wallet_number'])->first();
+
+
         return DB::transaction(function () use (
-            $data
+            $data,
+            $billerItem,
+            $wallet
         ) {
             // Create payment record
             $payment = BillPayment::create([
-                'biller_item_id' => $data['biller_item_id'],
-                'wallet_id' => $data['wallet_id'],
-                'payment_method_id' => $data['payment_method_id'],
+                'biller_item_id' => $billerItem->id,
+                'wallet_id' => $wallet->id,
+                'payment_method' => $data['payment_method'],
                 'bill_code' => $data['bill_code'],
                 'amount' => $data['amount'],
-                'status' => 'pending',
+                'status' => 'PENDING',
                 'reference' => $this->generateReference(),
-                'validation_data' => $data['validation_data']
+                'validation_data' => $data['validation_data'] ?? null
             ]);
 
             // Process payment with biller service

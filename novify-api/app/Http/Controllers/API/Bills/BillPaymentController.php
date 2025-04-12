@@ -38,16 +38,14 @@ class BillPaymentController extends BaseApiController
     {
         $request->validate([
             'biller_item_id' => 'required|exists:biller_items,id',
-            'wallet_id' => 'required|exists:wallets,id',
-            'payment_method_id' => 'required|exists:payment_methods,id',
+            'wallet_number' => 'required',
+            'payment_method' => 'required',
             'bill_code' => 'required|string',
-            'amount' => 'required|numeric|min:0',
-            'validation_data' => 'required'
+            'amount' => 'required|numeric|min:500',
+            'validation_data' => 'nullable'
         ]);
 
-        $billerItem = BillerItem::findOrFail($request->biller_item_id);
-        $wallet = Wallet::findOrFail($request->wallet_id);
-
+       
         $payment = $this->billPaymentService->processBillPayment(
             $request->all()
         );
