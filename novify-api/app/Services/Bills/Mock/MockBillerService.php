@@ -146,8 +146,8 @@ class MockBillerService implements BillerServiceConnection
 
     private function validateMyMarketBill($data): array
     {
-        if (!preg_match('/^RENT-\d{6}$/', $data['bill_code'])) {
-            throw new ValidationException('Invalid rent payment code format. Expected: RENT-XXXXXX');
+        if (empty($data['customer_number'])) {
+            throw new ValidationException('Invalid customer number');
         }
 
         return [
@@ -165,8 +165,8 @@ class MockBillerService implements BillerServiceConnection
 
     private function validateUtilityBill($data): array
     {
-        if (!preg_match('/^(WATER|ELEC)-\d{8}$/', $data['bill_code'])) {
-            throw new ValidationException('Invalid utility bill format. Expected: (WATER|ELEC)-XXXXXXXX');
+        if (empty($data['customer_number'])) {
+            throw new ValidationException('Invalid customer number');
         }
 
         $type = explode('-', $data['bill_code'])[0];
@@ -188,8 +188,8 @@ class MockBillerService implements BillerServiceConnection
 
     private function validateInternetBill($data): array
     {
-        if (!preg_match('/^NET-\d{10}$/', $data['bill_code'])) {
-            throw new ValidationException('Invalid internet bill format. Expected: NET-XXXXXXXXXX');
+        if (empty($data['customer_number'])) {
+            throw new ValidationException('Invalid customer number');
         }
 
         return [
