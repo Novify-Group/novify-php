@@ -27,8 +27,6 @@ class BillPaymentController extends BaseApiController
             'customer_number' => 'required|string'
         ]);
 
-        $billerItem = BillerItem::findOrFail($request->biller_item_id);
-        
         $validationResponse = $this->billPaymentService->validateBill($request->all());
 
         return $this->successResponse($validationResponse);

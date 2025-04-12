@@ -46,6 +46,13 @@ class BillPaymentService
         $billerItem = BillerItem::findOrFail($data['biller_item_id']);
         $wallet = Wallet::where('wallet_number', $data['wallet_number'])->first();
 
+        if (!$wallet) 
+            throw new ValidationException("Invalid Wallet Number");
+        
+
+        if ($wallet->balance < $data['amount'] && $data['payment_method'] != 'WALLET') 
+            throw new ValidationException("Insufficient Wallet balance");
+        
 
         return DB::transaction(function () use (
             $data,
