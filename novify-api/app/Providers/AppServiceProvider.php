@@ -13,7 +13,7 @@ use App\Contracts\Wallet\WalletBalanceContract;
 use App\Services\Wallet\InternalWalletBalanceService;
 use App\Services\Bills\BillerServiceConnection;
 use App\Services\Bills\Mock\MockBillerService;
-
+use App\Services\SMS\EgoSMSService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,8 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // $this->app->bind(SMSServiceContract::class, function ($app) {
+        //     return new AfricasTalkingSMSService();
+        // }); 
+
         $this->app->bind(SMSServiceContract::class, function ($app) {
-            return new AfricasTalkingSMSService();
+            return new EgoSMSService();
         }); 
 
         $this->app->bind(MobileMoneyContract::class, function ($app) {
