@@ -129,7 +129,7 @@ class WalletService
             return $this->errorResponse('Wallet not found', 404);
         }
 
-        return $this->processNonWalletPayment($data, $wallet, 'TOPUP');
+        return $this->processNonWalletPayment($data, $wallet,null, 'TOPUP');
     }
 
     public function processNonWalletPayment($data, Wallet $toWallet,$fromWallet=null,$type='TOPUP')
