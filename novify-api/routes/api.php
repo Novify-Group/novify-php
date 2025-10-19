@@ -9,6 +9,11 @@ use App\Http\Controllers\Api\BillPaymentController;
 // Include all route files
 Route::get('/test', [TestController::class, 'register']);
 
+// Swagger Documentation Route
+Route::get('/documentation', function () {
+    return view('l5-swagger::index');
+})->name('swagger.documentation');
+
 Route::middleware('cors')->group(function () {
     require __DIR__.'/auth.php';
     require __DIR__.'/merchant.php';

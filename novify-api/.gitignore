@@ -21,3 +21,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/web-app/node_modules
+/web-app/dist
+/web-app/.env
+/web-app/.next
