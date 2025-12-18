@@ -4,6 +4,7 @@ namespace App\Services\SMS;
 
 use App\Contracts\Services\SMSServiceContract;
 use App\Jobs\SendBulkSMS;
+use App\Jobs\SendSingleSMS;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -64,6 +65,11 @@ class AfricasTalkingSMSService implements SMSServiceContract
             }
         }
         return $results;
+    }
+
+    public function queueSend(string $phoneNumber, string $message): void
+    {
+        SendSingleSMS::dispatch($phoneNumber, $message);
     }
 
     public function queueBulkSend(array $messages, int $batchSize = 100): void

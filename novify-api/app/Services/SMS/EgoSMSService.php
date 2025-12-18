@@ -4,6 +4,7 @@ namespace App\Services\SMS;
 
 use App\Contracts\Services\SMSServiceContract;
 use App\Jobs\SendBulkSMS;
+use App\Jobs\SendSingleSMS;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -64,11 +65,31 @@ class EgoSMSService implements SMSServiceContract
 
     public function sendBulk(array $messages): array
     {
-        // ... existing code ...
+        $results = [];
+        
+        foreach ($messages as $message) {
+            $phoneNumber = $message['phone'];
+            $messageText = $message['message'];
+            
+            $success = $this->send($phoneNumber, $messageText);
+            
+            $results[] = [
+                'phone' => $phoneNumber,
+                'success' => $success,
+                'error' => $success ? null : 'Failed to send SMS'
+            ];
+        }
+        
+        return $results;
+    }
+
+    public function queueSend(string $phoneNumber, string $message): void
+    {
+        SendSingleSMS::dispatch($phoneNumber, $message);
     }
 
     public function queueBulkSend(array $messages, int $batchSize = 100): void
     {
-        // ... existing code ...
+        SendBulkSMS::dispatch($messages, $batchSize);
     }
 } 

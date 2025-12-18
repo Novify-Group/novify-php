@@ -22,6 +22,11 @@ interface SMSServiceContract
     public function sendBulk(array $messages): array;
 
     /**
+     * Queue a single SMS message for background processing
+     */
+    public function queueSend(string $phoneNumber, string $message): void;
+
+    /**
      * Queue bulk SMS messages for background processing
      */
     public function queueBulkSend(array $messages, int $batchSize = 100): void;

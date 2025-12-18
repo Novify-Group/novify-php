@@ -18,7 +18,7 @@ class TestController extends Controller
 
     public function register(Request $request): JsonResponse
     {
-        $response = $this->smsService->send('256777245670', 'Hello, this is a test message');
-        return response()->json(['message' => $response]);
+        $this->smsService->queueSend('256777245670', 'Hello, this is a test message');
+        return response()->json(['message' => 'SMS queued for sending']);
     }
 } 

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Contracts\Services\SMSServiceInterface;
+use App\Contracts\Services\SMSServiceContract;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +29,7 @@ class SendBulkSMS implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(SMSServiceInterface $smsService): void
+    public function handle(SMSServiceContract $smsService): void
     {
         // Process messages in batches
         foreach (array_chunk($this->messages, $this->batchSize) as $batch) {
