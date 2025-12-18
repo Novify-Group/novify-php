@@ -175,13 +175,13 @@ class MerchantService
 
             if ($merchant->is_verified) {
                 return $this->successResponse([
-                    'requires_otp' => true,
+                    'requires_otp' => false,
                     'token' => $token
                 ], 'OTP sent to your phone number');
             }
 
             return $this->successResponse([
-                'requires_verification' => true,
+                'requires_verification' => false,
                 'token' => $token
             ], 'Please verify your account first', 403);
         });
