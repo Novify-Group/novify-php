@@ -290,6 +290,7 @@ class MerchantService
     {
         $appName = config('app.name');
         $message = "Your {$appName} OTP is: {$otp}. Valid for 10 minutes.";
+        logger('Sending OTP to: '.$this->formatPhoneNumber($merchant).' with message: '.$message);
         $this->smsService->queueSend($this->formatPhoneNumber($merchant), $message);
     }
 
