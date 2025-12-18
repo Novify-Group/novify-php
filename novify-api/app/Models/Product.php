@@ -62,7 +62,7 @@ class Product extends Model
         if (!$value) {
             return null;
         }
-        return config('app.url') . '/' . $value;
+        return config('app.url') . '/storage/' . $value;
     }
 
     public function merchant(): BelongsTo
