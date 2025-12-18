@@ -142,13 +142,17 @@ class WalletService
                 'phone' => $data['customer_number'] ?? null,
                 'reference' => $transaction->tran_reference
             ]);
-        }
-
-        if ($data['payment_method'] === 'CARD') {
+        } elseif ($data['payment_method'] === 'CARD') {
             $paymentStatus = $this->cardPaymentService->checkTransactionStatus([
                 'amount' => $data['amount'],
                 'reference' => $transaction->tran_reference
             ]);
+        } elseif ($data['payment_method'] === 'CASH') {
+            // Cash payments don't require external processing
+            $paymentStatus = ['success' => true];
+        } else {
+            // Unknown payment method
+            return $this->errorResponse('Unsupported payment method', 400);
         }
 
         if ($paymentStatus['success'] !== true) 
