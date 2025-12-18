@@ -171,17 +171,18 @@ class MerchantService
             
             $merchant = auth('api')->user();
             $otp = $this->generateAndSaveOtp($merchant);
+            logger('OTP: '.$otp);
             $this->sendOtpViaSMS($merchant, $otp);
 
             if ($merchant->is_verified) {
                 return $this->successResponse([
-                    'requires_otp' => false,
+                    'requires_otp' => true,
                     'token' => $token
                 ], 'OTP sent to your phone number');
             }
 
             return $this->successResponse([
-                'requires_verification' => false,
+                'requires_verification' => true,
                 'token' => $token
             ], 'Please verify your account first', 403);
         });
